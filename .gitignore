@@ -1,0 +1,12 @@
+# === IDE & System ===
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+*.log
+
+# === AI/Agent Specific ===
+.anthropic/
+.cursor/
+.claudecode/
