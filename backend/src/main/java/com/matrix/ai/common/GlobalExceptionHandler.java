@@ -1,5 +1,6 @@
 package com.matrix.ai.common;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
@@ -40,6 +41,26 @@ public class GlobalExceptionHandler {
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.joining(", "));
         return Result.error(400, message);
+    }
+
+    /**
+     * 处理枚举反序列化异常
+     */
+    @ExceptionHandler(InvalidFormatException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Result<Void> handleInvalidFormatException(InvalidFormatException e) {
+        log.warn("Invalid format exception: ", e);
+        return Result.error(400, "无效的枚举值：" + e.getValue());
+    }
+
+    /**
+     * 处理算术异常（如除数为 0）
+     */
+    @ExceptionHandler(ArithmeticException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Result<Void> handleArithmeticException(ArithmeticException e) {
+        log.warn("Arithmetic exception: ", e);
+        return Result.error(400, e.getMessage());
     }
 
     /**

@@ -28,17 +28,20 @@
 
     <dependencies>
         <!-- Spring Boot Starters -->
+        <!--构建 Web 服务（含 Tomcat 和 Spring MVC）-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!--提供参数校验功能（如 @NotBlank, @Min）-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
         <!-- Lombok -->
+        <!--开发神器。通过注解自动生成 Getter/Setter，标记为 <optional>true</optional> 表明它不会被传递给依赖该项目的其他模块。-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -46,6 +49,7 @@
         </dependency>
 
         <!-- SpringDoc OpenAPI -->
+        <!--自动生成 Swagger/OpenAPI 3 接口文档界面，方便前后端联调。-->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
@@ -53,6 +57,7 @@
         </dependency>
 
         <!-- Test -->
+        <!-- 包含 JUnit, Mockito 等测试工具，<scope>test</scope> 表示仅在测试阶段生效。-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -62,11 +67,13 @@
 
     <build>
         <plugins>
+            <!--负责将项目打包成一个可执行的 Fat JAR（包含所有依赖）-->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <excludes>
+                        <!--<exclude> Lombok: 因为 Lombok 仅在编译期生效，运行期不需要，所以打包时将其剔除以减小体积。-->
                         <exclude>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
@@ -76,6 +83,10 @@
             </plugin>
 
             <!-- SpringDoc Maven Plugin - 导出 openapi.yaml -->
+            <!--这是一个进阶配置，其自动化程度很高：
+            自动化操作: 在集成测试阶段（integration-test）运行。
+            功能: 自动访问本地运行的服务（localhost:8080/v3/api-docs.yaml），拉取 API 定义。
+            导出: 将 API 文档保存为 openapi.yaml 文件到指定的目录（${project.basedir}/../docs/api）。这非常适合做 API First 开发或生成离线文档。-->
             <plugin>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-maven-plugin</artifactId>

@@ -1,5 +1,7 @@
 package com.matrix.ai.dto;
 
+import com.matrix.ai.enums.OperatorType;
+import com.matrix.ai.validation.ValidOperator;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -22,8 +24,9 @@ public class CalculatorRequest {
     private Double num2;
 
     /**
-     * 运算符：add, sub, mul, div
+     * 运算符
      */
     @NotNull(message = "运算符不能为空")
-    private String operator;
+    @ValidOperator
+    private OperatorType operator;
 }
