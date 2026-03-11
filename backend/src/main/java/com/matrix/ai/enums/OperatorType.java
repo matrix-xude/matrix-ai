@@ -37,13 +37,6 @@ public enum OperatorType {
                 .orElse(null);
     }
 
-    /**
-     * 判断是否为有效运算符
-     */
-    public static boolean isValid(String code) {
-        return fromCode(code) != null;
-    }
-
     @JsonValue
     public String toCode() {
         return code;
