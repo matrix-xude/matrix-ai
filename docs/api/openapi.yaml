@@ -1,0 +1,133 @@
+openapi: 3.0.1
+info:
+  title: Matrix AI API
+  description: Matrix AI 三端互通项目后端 API 文档
+  contact:
+    name: Matrix AI Team
+    email: support@matrix.ai
+  version: 0.0.1
+servers:
+- url: http://localhost:8080
+  description: Generated server url
+tags:
+- name: Calculator
+  description: 计算器接口
+paths:
+  /api/calculator:
+    post:
+      tags:
+      - Calculator
+      summary: 执行计算
+      description: 支持加法 (add)、减法 (sub)、乘法 (mul)、除法 (div) 运算
+      operationId: calculate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CalculatorRequest'
+        required: true
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultVoid'
+        "400":
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        "200":
+          description: 计算成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalculatorResponse'
+  /api/health:
+    get:
+      tags:
+      - health-controller
+      operationId: health
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultVoid'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultVoid'
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultString'
+components:
+  schemas:
+    ResultVoid:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        data:
+          type: object
+    CalculatorRequest:
+      required:
+      - num1
+      - num2
+      - operator
+      type: object
+      properties:
+        num1:
+          type: number
+          format: double
+        num2:
+          type: number
+          format: double
+        operator:
+          type: string
+      description: 计算请求参数
+    Result:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        data:
+          type: object
+    CalculatorResponse:
+      type: object
+      properties:
+        num1:
+          type: number
+          format: double
+        num2:
+          type: number
+          format: double
+        operator:
+          type: string
+        result:
+          type: number
+          format: double
+    ResultString:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        data:
+          type: string
