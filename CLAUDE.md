@@ -24,6 +24,7 @@
 
 ## 📝 代码与提交规范
 - **Git Commit**: 遵循 `type(scope): description` 格式 (如 `feat(backend): add user login`)。
+- **注释保护**：不要删除注释，除非代码被删除或修改后注释意义改变。
 - **技术偏好**:
   - Backend: Java 17, Spring Boot 3
   - Android: Kotlin, Compose, MVVM
