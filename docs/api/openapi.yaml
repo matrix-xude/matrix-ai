@@ -12,7 +12,75 @@ servers:
 tags:
 - name: Calculator
   description: 计算器接口
+- name: Auth
+  description: 认证接口
 paths:
+  /api/auth/login:
+    post:
+      tags:
+      - Auth
+      summary: 用户登录
+      description: 支持用户名/手机号/邮箱 + 密码方式登录，返回 Access Token
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      responses:
+        "200":
+          description: 登录成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        "400":
+          description: 参数错误/账号或密码错误/账号已被封禁
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+  /api/auth/logout:
+    post:
+      tags:
+      - Auth
+      summary: 用户登出
+      description: 客户端删除 Token 即可，服务端暂不处理（JWT 无状态）
+      operationId: logout
+      responses:
+        "200":
+          description: 登出成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultVoid'
+  /api/auth/register:
+    post:
+      tags:
+      - Auth
+      summary: 用户注册
+      description: 支持用户名 + 密码方式注册，注册成功后自动登录并返回 Token
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+        required: true
+      responses:
+        "200":
+          description: 注册成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        "400":
+          description: 参数错误/用户名已存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
   /api/calculator:
     post:
       tags:
@@ -45,6 +113,160 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CalculatorResponse'
+  /api/calculator/history:
+    get:
+      tags:
+      - Calculator
+      summary: 获取历史记录
+      description: 返回所有计算历史记录，按创建时间倒序排列
+      operationId: getHistory
+      responses:
+        "200":
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CalculationHistory'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultVoid'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultVoid'
+    delete:
+      tags:
+      - Calculator
+      summary: 清空历史记录
+      description: 删除所有计算历史记录
+      operationId: clearHistory
+      responses:
+        "200":
+          description: 清空成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultVoid'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultVoid'
+  /api/calculator/history/count:
+    get:
+      tags:
+      - Calculator
+      summary: 获取历史记录数量
+      description: 返回当前存储的历史记录总数
+      operationId: getHistoryCount
+      responses:
+        "200":
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultInt'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultVoid'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultVoid'
+  /api/calculator/history/{id}:
+    get:
+      tags:
+      - Calculator
+      summary: 获取历史记录详情
+      description: 根据 ID 获取单条计算历史记录
+      operationId: getHistoryById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalculationHistory'
+        "404":
+          description: 记录不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultVoid'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultVoid'
+    delete:
+      tags:
+      - Calculator
+      summary: 删除历史记录
+      description: 根据 ID 删除单条计算历史记录
+      operationId: deleteHistory
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: 删除成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        "404":
+          description: 记录不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultVoid'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultVoid'
   /api/health:
     get:
       tags:
@@ -71,6 +293,85 @@ paths:
                 $ref: '#/components/schemas/ResultString'
 components:
   schemas:
+    LoginRequest:
+      required:
+      - password
+      - username
+      type: object
+      properties:
+        username:
+          type: string
+          description: 用户名/手机号/邮箱
+        password:
+          type: string
+          description: 密码
+        deviceId:
+          type: string
+          description: 设备 ID（可选）
+        deviceName:
+          type: string
+          description: 设备名称（可选）
+        deviceType:
+          type: string
+          description: 设备类型（可选）
+      description: 用户登录请求参数
+    ResultInt:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        data:
+          type: integer
+          format: int32
+    AuthResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: 用户 ID
+        username:
+          type: string
+          description: 用户名
+        nickname:
+          type: string
+          description: 昵称
+        token:
+          type: string
+          description: Access Token
+        expiresIn:
+          type: integer
+          format: int64
+          description: Token 有效期（秒）
+      description: 认证响应（登录/注册返回）
+    Result:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        data:
+          type: object
+    RegisterRequest:
+      required:
+      - password
+      - username
+      type: object
+      properties:
+        username:
+          type: string
+          description: 用户名
+        password:
+          type: string
+          description: 密码
+        nickname:
+          type: string
+          description: 昵称（可选）
+      description: 用户注册请求参数
     ResultVoid:
       type: object
       properties:
@@ -81,6 +382,16 @@ components:
           type: string
         data:
           type: object
+    ResultString:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        data:
+          type: string
     CalculatorRequest:
       required:
       - num1
@@ -97,16 +408,6 @@ components:
         operator:
           type: string
       description: 计算请求参数
-    Result:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        message:
-          type: string
-        data:
-          type: object
     CalculatorResponse:
       type: object
       properties:
@@ -121,13 +422,28 @@ components:
         result:
           type: number
           format: double
-    ResultString:
+    CalculationHistory:
       type: object
       properties:
-        code:
-          type: integer
-          format: int32
-        message:
+        id:
           type: string
-        data:
+          description: 记录 ID
+        num1:
+          type: number
+          format: double
+          description: 第一个操作数
+        num2:
+          type: number
+          format: double
+          description: 第二个操作数
+        operator:
           type: string
+          description: 运算符
+        result:
+          type: number
+          format: double
+          description: 计算结果
+        createTime:
+          type: string
+          format: date-time
+          description: 创建时间

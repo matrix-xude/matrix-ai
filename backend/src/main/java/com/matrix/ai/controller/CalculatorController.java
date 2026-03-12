@@ -1,7 +1,9 @@
 package com.matrix.ai.controller;
 
+import com.matrix.ai.annotation.RequireAuth;
 import com.matrix.ai.common.Result;
 import com.matrix.ai.dto.CalculatorRequest;
+import com.matrix.ai.interceptor.JwtInterceptor;
 import com.matrix.ai.service.CalculatorService;
 import com.matrix.ai.vo.CalculationHistory;
 import com.matrix.ai.vo.CalculatorResponse;
@@ -26,6 +28,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/calculator")
+@RequireAuth(mode = JwtInterceptor.AuthMode.REQUIRED)  // 默认所有接口需要 Token
 public class CalculatorController {
 
     private final CalculatorService calculatorService;
@@ -43,6 +46,7 @@ public class CalculatorController {
             @ApiResponse(responseCode = "400", description = "参数错误",
                     content = @Content(schema = @Schema(implementation = Result.class)))
     })
+    @RequireAuth(mode = JwtInterceptor.AuthMode.REQUIRED)
     @PostMapping
     public Result<CalculatorResponse> calculate(
             @Valid @RequestBody
@@ -60,6 +64,7 @@ public class CalculatorController {
     @Operation(summary = "获取历史记录", description = "返回所有计算历史记录，按创建时间倒序排列")
     @ApiResponse(responseCode = "200", description = "获取成功",
             content = @Content(schema = @Schema(implementation = CalculationHistory.class)))
+    @RequireAuth(mode = JwtInterceptor.AuthMode.REQUIRED)
     @GetMapping("/history")
     public Result<List<CalculationHistory>> getHistory() {
         return Result.success(calculatorService.getAllHistory());
@@ -78,6 +83,7 @@ public class CalculatorController {
             @ApiResponse(responseCode = "404", description = "记录不存在",
                     content = @Content(schema = @Schema(implementation = Result.class)))
     })
+    @RequireAuth(mode = JwtInterceptor.AuthMode.REQUIRED)
     @GetMapping("/history/{id}")
     public Result<CalculationHistory> getHistoryById(
             @PathVariable @Parameter(description = "历史记录 ID", required = true) String id) {
@@ -100,6 +106,7 @@ public class CalculatorController {
             @ApiResponse(responseCode = "404", description = "记录不存在",
                     content = @Content(schema = @Schema(implementation = Result.class)))
     })
+    @RequireAuth(mode = JwtInterceptor.AuthMode.REQUIRED)
     @DeleteMapping("/history/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Result<Void> deleteHistory(
@@ -117,6 +124,7 @@ public class CalculatorController {
     @Operation(summary = "清空历史记录", description = "删除所有计算历史记录")
     @ApiResponse(responseCode = "200", description = "清空成功",
             content = @Content(schema = @Schema(implementation = Result.class)))
+    @RequireAuth(mode = JwtInterceptor.AuthMode.REQUIRED)
     @DeleteMapping("/history")
     @ResponseStatus(HttpStatus.OK)
     public Result<Void> clearHistory() {
@@ -132,6 +140,7 @@ public class CalculatorController {
     @Operation(summary = "获取历史记录数量", description = "返回当前存储的历史记录总数")
     @ApiResponse(responseCode = "200", description = "获取成功",
             content = @Content(schema = @Schema(implementation = Result.class)))
+    @RequireAuth(mode = JwtInterceptor.AuthMode.REQUIRED)
     @GetMapping("/history/count")
     public Result<Integer> getHistoryCount() {
         return Result.success(calculatorService.getHistoryCount());

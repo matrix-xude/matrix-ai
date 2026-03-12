@@ -1,6 +1,7 @@
 package com.matrix.ai.common;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.matrix.ai.exception.AuthException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
@@ -61,6 +62,16 @@ public class GlobalExceptionHandler {
     public Result<Void> handleArithmeticException(ArithmeticException e) {
         log.warn("Arithmetic exception: ", e);
         return Result.error(400, e.getMessage());
+    }
+
+    /**
+     * 处理认证异常
+     */
+    @ExceptionHandler(AuthException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Result<Void> handleAuthException(AuthException e) {
+        log.warn("Auth exception: {}", e.getMessage());
+        return Result.error(e.getCode(), e.getMessage());
     }
 
     /**

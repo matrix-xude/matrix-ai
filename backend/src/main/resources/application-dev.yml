@@ -42,3 +42,9 @@ mybatis-plus:
       # 逻辑删除字段值
       logic-delete-value: 1
       logic-not-delete-value: 0
+
+# JWT 配置
+jwt:
+  secret-key: matrix-ai-secret-key-at-least-32-characters  # 至少 32 字符
+  expiration: 7200000  # 2 小时（毫秒）
+  issuer: matrix-ai
