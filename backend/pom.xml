@@ -41,7 +41,7 @@
         </dependency>
 
         <!-- Lombok -->
-        <!--开发神器。通过注解自动生成 Getter/Setter，标记为 <optional>true</optional> 表明它不会被传递给依赖该项目的其他模块。-->
+        <!--开发神器。|通过注解自动生成 Getter/Setter，标记为 <optional>true</optional> 表明它不会被传递给依赖该项目的其他模块。|-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -49,7 +49,7 @@
         </dependency>
 
         <!-- SpringDoc OpenAPI -->
-        <!--自动生成 Swagger/OpenAPI 3 接口文档界面，方便前后端联调。-->
+        <!--自动生成 Swagger/OpenAPI 3 接口文档界面，方便前后端联调。|-->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
@@ -57,11 +57,32 @@
         </dependency>
 
         <!-- Test -->
-        <!-- 包含 JUnit, Mockito 等测试工具，<scope>test</scope> 表示仅在测试阶段生效。-->
+        <!-- 包含 JUnit, Mockito 等测试工具，<scope>test</scope> 表示仅在测试阶段生效。|-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <!-- MyBatis-Plus Spring Boot 3 Starter (增强工具)-->
+        <!-- MyBatis-Plus 增强工具，提供通用 CRUD、分页、乐观锁等功能 -->
+        <!--1.通用 CRUD： 它内置了基础的增删改查。|你只要定义一个 Mapper 接口继承 BaseMapper<User>，不用写一行 SQL，就能直接调用 insert、selectById 等方法。|
+            2.自动分页： 以前写分页需要手写 LIMIT 和 COUNT，现在只需要配置一个拦截器，传一个 Page 对象，它会自动帮你把 SQL 拼好。|
+            3.条件构造器 (Wrapper)： 允许你用 Java 代码链式调用（如 .eq("name", "张三")）来组装 WHERE 子句，避免了在 XML 里拼凑繁琐的 <if> 标签。|
+            4.热加载与自动注入： 针对 Spring Boot 3 做了深度适配，启动即用，极大简化了配置。|-->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+            <version>3.5.7</version>
+        </dependency>
+
+        <!-- MySQL 驱动 -->
+        <!-- MySQL 数据库 JDBC 驱动 -->
+        <!--这里设置 scope 为 runtime 是因为你的代码在编译阶段只需要 JDBC 标准接口，只有在程序运行时才真正需要这个特定的驱动来干活。|-->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 
@@ -73,7 +94,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <excludes>
-                        <!--<exclude> Lombok: 因为 Lombok 仅在编译期生效，运行期不需要，所以打包时将其剔除以减小体积。-->
+                        <!--<exclude> Lombok: 因为 Lombok 仅在编译期生效，运行期不需要，所以打包时将其剔除以减小体积。|-->
                         <exclude>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
@@ -84,9 +105,9 @@
 
             <!-- SpringDoc Maven Plugin - 导出 openapi.yaml -->
             <!--这是一个进阶配置，其自动化程度很高：
-            自动化操作: 在集成测试阶段（integration-test）运行。
-            功能: 自动访问本地运行的服务（localhost:8080/v3/api-docs.yaml），拉取 API 定义。
-            导出: 将 API 文档保存为 openapi.yaml 文件到指定的目录（${project.basedir}/../docs/api）。这非常适合做 API First 开发或生成离线文档。-->
+            自动化操作: 在集成测试阶段（integration-test）运行。|
+            功能: 自动访问本地运行的服务（localhost:8080/v3/api-docs.yaml），拉取 API 定义。|
+            导出: 将 API 文档保存为 openapi.yaml 文件到指定的目录（${project.basedir}/../docs/api）。|这非常适合做 API First 开发或生成离线文档。|-->
             <plugin>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-maven-plugin</artifactId>

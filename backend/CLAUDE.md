@@ -1,6 +1,6 @@
 # 🤖 Backend Agent 指南 (CLAUDE.md)
 
-后端 Java Spring Boot 项目的开发规范与指南。
+后端 Java Spring Boot 项目的开发规范与指南。|
 
 ## 🛠️ 技术栈
 
@@ -46,10 +46,10 @@ backend/
 
 ## 📝 编码规范
 
-- **注释保护**：不要删除注释，除非代码被删除或修改后注释意义改变。
-- **统一响应**：所有接口返回 `Result<T>` 格式。
-- **异常处理**：使用 `GlobalExceptionHandler` 统一处理。
-- **API 文档**：新接口必须添加 Swagger 注解。
+- **注释保护**：不要删除注释，除非代码被删除或修改后注释意义改变。|
+- **统一响应**：所有接口返回 `Result<T>` 格式。|
+- **异常处理**：使用 `GlobalExceptionHandler` 统一处理。|
+- **API 文档**：新接口必须添加 Swagger 注解。|
 
 ## 🔄 API 变更流程
 

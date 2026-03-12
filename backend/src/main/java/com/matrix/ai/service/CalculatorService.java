@@ -1,18 +1,17 @@
 package com.matrix.ai.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.matrix.ai.dto.CalculatorRequest;
+import com.matrix.ai.entity.CalculationHistory;
 import com.matrix.ai.enums.OperatorType;
-import com.matrix.ai.vo.CalculationHistory;
+import com.matrix.ai.mapper.CalculationHistoryMapper;
 import com.matrix.ai.vo.CalculatorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * 计算器服务
@@ -21,10 +20,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class CalculatorService {
 
-    /**
-     * 内存存储历史记录（线程安全）
-     */
-    private final Map<String, CalculationHistory> historyStore = new ConcurrentHashMap<>();
+    private final CalculationHistoryMapper calculationHistoryMapper;
+
+    public CalculatorService(CalculationHistoryMapper calculationHistoryMapper) {
+        this.calculationHistoryMapper = calculationHistoryMapper;
+    }
 
     /**
      * 执行计算
@@ -69,25 +69,40 @@ public class CalculatorService {
      */
     private void saveHistory(CalculatorResponse response) {
         CalculationHistory history = CalculationHistory.from(response);
-        historyStore.put(history.getId(), history);
+        calculationHistoryMapper.insert(history);
         log.debug("保存历史记录：{}", history.getId());
     }
 
     /**
      * 获取所有历史记录（按时间倒序）
      */
-    public List<CalculationHistory> getAllHistory() {
-        List<CalculationHistory> list = new ArrayList<>(historyStore.values());
-        // 按创建时间倒序
-        list.sort((a, b) -> b.getCreateTime().compareTo(a.getCreateTime()));
-        return list;
+    public List<com.matrix.ai.vo.CalculationHistory> getAllHistory() {
+        LambdaQueryWrapper<CalculationHistory> wrapper = new LambdaQueryWrapper<>();
+        wrapper.orderByDesc(CalculationHistory::getCreateTime);
+        List<CalculationHistory> entities = calculationHistoryMapper.selectList(wrapper);
+        return entities.stream().map(this::entityToVo).collect(Collectors.toList());
     }
 
     /**
      * 根据 ID 获取历史记录
      */
-    public Optional<CalculationHistory> getHistoryById(String id) {
-        return Optional.ofNullable(historyStore.get(id));
+    public Optional<com.matrix.ai.vo.CalculationHistory> getHistoryById(String id) {
+        CalculationHistory history = calculationHistoryMapper.selectById(id);
+        return Optional.ofNullable(history).map(this::entityToVo);
+    }
+
+    /**
+     * Entity 转 VO
+     */
+    private com.matrix.ai.vo.CalculationHistory entityToVo(CalculationHistory entity) {
+        return com.matrix.ai.vo.CalculationHistory.builder()
+                .id(entity.getId())
+                .num1(entity.getNum1())
+                .num2(entity.getNum2())
+                .operator(entity.getOperator())
+                .result(entity.getResult())
+                .createTime(entity.getCreateTime())
+                .build();
     }
 
     /**
@@ -97,14 +112,15 @@ public class CalculatorService {
      * @return 是否删除成功
      */
     public boolean deleteHistory(String id) {
-        return historyStore.remove(id) != null;
+        return calculationHistoryMapper.deleteById(id) > 0;
     }
 
     /**
      * 清空所有历史记录
      */
     public void clearAllHistory() {
-        historyStore.clear();
+        LambdaQueryWrapper<CalculationHistory> wrapper = new LambdaQueryWrapper<>();
+        calculationHistoryMapper.delete(wrapper);
         log.info("清空所有历史记录");
     }
 
@@ -112,6 +128,6 @@ public class CalculatorService {
      * 获取历史记录数量
      */
     public int getHistoryCount() {
-        return historyStore.size();
+        return Math.toIntExact(calculationHistoryMapper.selectCount(null));
     }
 }

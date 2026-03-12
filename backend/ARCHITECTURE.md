@@ -1,6 +1,6 @@
 # Backend Architecture
 
-后端项目架构说明文档。
+后端项目架构说明文档。|
 
 ## 技术栈
 
@@ -91,7 +91,7 @@ public class UserController {
 
 ### 添加新配置
 
-在 `config/` 包创建 `@Configuration` 类。
+在 `config/` 包创建 `@Configuration` 类。|
 
 ### 构建命令
 
