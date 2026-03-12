@@ -5,6 +5,11 @@ spring:
       on-profile: dev
   # 是否自动创建数据库（开发环境启用）
   auto-create-database: true
+  sql:
+    init:
+      mode: always  # 启用 schema.sql 自动执行
+      schema-locations: classpath:schema.sql  # 指定 schema 文件位置
+      continue-on-error: false  # 遇到错误时停止（因为 SQL 有 IF NOT EXISTS，通常不会出错）
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/matrix_ai?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
