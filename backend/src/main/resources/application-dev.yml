@@ -3,8 +3,37 @@ spring:
   config:
     activate:
       on-profile: dev
+  # 是否自动创建数据库（开发环境启用）
+  auto-create-database: true
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/matrix_ai?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: root123
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      auto-commit: true
+      idle-timeout: 30000
+      pool-name: HikariPool-1
+      max-lifetime: 600000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
 
-logging:
-  level:
-    root: INFO
-    com.matrix.ai: DEBUG
+mybatis-plus:
+  # Mapper XML 文件路径
+  mapper-locations: classpath*:/mapper/**/*.xml
+  # 实体类包路径
+  type-aliases-package: com.matrix.ai.entity
+  configuration:
+    # 开启驼峰命名转换 (user_name -> userName)
+    map-underscore-to-camel-case: true
+    # 打印 SQL 日志
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+  global-config:
+    db-config:
+      # 主键类型 (AUTO 自增/ASSIGN_UUID 等)
+      id-type: AUTO
+      # 逻辑删除字段值
+      logic-delete-value: 1
+      logic-not-delete-value: 0
